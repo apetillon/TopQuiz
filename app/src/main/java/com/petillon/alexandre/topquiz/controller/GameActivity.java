@@ -2,6 +2,7 @@ package com.petillon.alexandre.topquiz.controller;
 
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -19,7 +20,9 @@ import com.petillon.alexandre.topquiz.R;
 import com.petillon.alexandre.topquiz.model.Question;
 import com.petillon.alexandre.topquiz.model.QuestionBank;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class GameActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String BUNDLE_EXTRA_SCORE = "BUNDLE_EXTRA_SCORE";
@@ -33,6 +36,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private Button mAnswerButtonB;
     private Button mAnswerButtonC;
     private Button mAnswerButtonD;
+    private ArrayList<Button> mListButton;
 
     private QuestionBank mQuestionBank;
     private Question mCurrentQuestion;
@@ -52,7 +56,15 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         mAnswerButtonC = (Button) findViewById(R.id.activity_game_btn_c);
         mAnswerButtonD = (Button) findViewById(R.id.activity_game_btn_d);
 
-        //super.onCreate(savedInstanceState);
+        mListButton = new ArrayList<Button>();
+        mListButton.add(mAnswerButtonA);
+        mListButton.add(mAnswerButtonB);
+        mListButton.add(mAnswerButtonC);
+        mListButton.add(mAnswerButtonD);
+
+        for (Button b : mListButton) {
+            b.setBackgroundColor(Color.rgb(221,221,221));
+        }
 
         mQuestionBank = this.generateQuestion();
         if (savedInstanceState != null) {
@@ -109,13 +121,15 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         mEnableTouchEvent = false;
-        int answerIndex = (int) view.getTag();
+        final int answerIndex = (int) view.getTag();
 
         if (answerIndex == mCurrentQuestion.getAnswerIndex()) {
-            Toast.makeText(this, "Correct", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Correct", Toast.LENGTH_SHORT).show();
+            mListButton.get(answerIndex).setBackgroundColor(Color.GREEN);
             mScore++;
         } else {
-            Toast.makeText(this, "Wrong answer", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Wrong answer", Toast.LENGTH_SHORT).show();
+            mListButton.get(answerIndex).setBackgroundColor(Color.RED);
         }
 
         new Handler().postDelayed(new Runnable() {
@@ -127,10 +141,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                     mCurrentQuestion = mQuestionBank.getQuestion();
                     displayQuestion(mCurrentQuestion);
                     mEnableTouchEvent = true;
+                    mListButton.get(answerIndex).setBackgroundColor(Color.rgb(221,221,221));
                 }
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
             }
-        }, 2000); // LENGTH_SHORT is usually 2 second long
+        }, 1000); // LENGTH_SHORT is usually 2 second long
     }
 
     private void endMessage() {
